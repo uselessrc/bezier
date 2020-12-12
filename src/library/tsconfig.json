@@ -2,6 +2,7 @@
   "extends": "@mufan/code/tsconfig.json",
   "compilerOptions": {
     "jsx": "react",
+    "lib": ["ESNext", "DOM"],
     "composite": true,
     "outDir": "../../bld/library",
     "declaration": true,
