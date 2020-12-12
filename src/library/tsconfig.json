@@ -1,7 +1,10 @@
 {
   "extends": "@mufan/code/tsconfig.json",
   "compilerOptions": {
+    "jsx": "react",
     "composite": true,
-    "outDir": "../../bld/library"
+    "outDir": "../../bld/library",
+    "declaration": true,
+    "downlevelIteration": true
   }
 }

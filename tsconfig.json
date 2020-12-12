@@ -5,7 +5,13 @@
     },
     {
       "path": "src/test"
+    },
+    {
+      "path": "examples"
     }
   ],
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true
+  },
   "files": []
 }

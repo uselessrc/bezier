@@ -3,13 +3,26 @@
   "version": "0.0.0",
   "license": "MIT",
   "author": "boenfu",
+  "source": "src/library/index.tsx",
+  "main": "bld/library/index.js",
+  "module": "bld/library/index.js",
+  "types": "bld/library/index.d.ts",
   "scripts": {
-    "build": "rimraf ./bld && tsc --build",
+    "prepublishOnly": "yarn test",
+    "prebuild": "rimraf ./bld",
+    "build": "microbundle build --css-modules false --jsx React.createElement -f es",
     "lint": "eslint .",
     "lint-prettier": "prettier --check .",
+    "start": "parcel examples/index.html --open",
     "test": "yarn lint-prettier && yarn build && yarn lint"
   },
   "dependencies": {
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "microbundle": "^0.12.4",
+    "parcel-bundler": "^1.12.4",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "tslib": "^2.0.3"
   },
   "devDependencies": {
