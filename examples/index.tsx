@@ -1,4 +1,4 @@
-import React, {CSSProperties, FC, Fragment, useEffect, useState} from 'react';
+import React, {FC, Fragment} from 'react';
 import ReactDOM from 'react-dom';
 
 // eslint-disable-next-line no-restricted-imports
@@ -33,8 +33,6 @@ const APP: FC = () => {
       ele,
       offset: {x, y},
     } = moving;
-
-    console.log(window.top);
 
     let {scrollTop, scrollLeft} = document.documentElement;
 

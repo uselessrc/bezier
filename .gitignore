@@ -10,3 +10,4 @@ bld/
 # parcel
 .cache/
 dist/
+docs/
