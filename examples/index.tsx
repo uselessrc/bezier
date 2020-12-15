@@ -34,12 +34,16 @@ const APP: FC = () => {
       offset: {x, y},
     } = moving;
 
+    console.log(window.top);
+
+    let {scrollTop, scrollLeft} = document.documentElement;
+
     Object.assign<CSSStyleDeclaration, Partial<CSSStyleDeclaration>>(
       ele.style,
       {
         position: 'absolute',
-        left: `${e.clientX - x}px`,
-        top: `${e.clientY - y}px`,
+        left: `${e.clientX - x + scrollLeft}px`,
+        top: `${e.clientY - y + scrollTop}px`,
       },
     );
   });
@@ -48,9 +52,49 @@ const APP: FC = () => {
 
   return (
     <Fragment>
-      <div className="block">block 1</div>
-      <Bezier />
-      <div className="block">block 2</div>
+      <div className="father">
+        <div className="block">block 1</div>
+        <Bezier />
+        <div className="block">block 2</div>
+      </div>
+
+      <div className="father">
+        <div className="block">block 1</div>
+        <Bezier placement={{start: 'bottom', end: 'top'}} />
+        <div className="block">block 2</div>
+        <Bezier placement={{start: 'right', end: 'bottom'}} />
+        <div className="block">block 3</div>
+        <Bezier
+          placement={{start: 'top', end: 'right'}}
+          endNode={ele => ele.parentElement?.firstElementChild!}
+        />
+      </div>
+
+      <div className="father">
+        {Array(3)
+          .fill(undefined)
+          .map((_, index) => {
+            return (
+              <Fragment key={index}>
+                <Bezier
+                  placement={{
+                    start: 'top',
+                    end: 'top',
+                    turningPoint: 0,
+                    startIndent: -40,
+                    endIndent: 10,
+                  }}
+                  stroke={{
+                    color: 'red',
+                    dasharray: 3,
+                  }}
+                  startNode="parentElement"
+                />
+                <div className="block">block {index + 1}</div>
+              </Fragment>
+            );
+          })}
+      </div>
     </Fragment>
   );
 };

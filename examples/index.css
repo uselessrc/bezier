@@ -3,18 +3,24 @@
   padding: 0;
 }
 
-body,
+body {
+  overflow: auto;
+}
+
 #app {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100vh;
-  height: 100vh;
-  overflow: hidden;
+  width: 300vh;
+  height: 300vh;
+}
+
+.father {
+  margin: 120px;
+  width: 600px;
+  padding: 200px 60px;
+  border: dashed 1px #ccc;
 }
 
 .block {
+  position: absolute;
   width: 220px;
   height: 64px;
   padding: 10px;
