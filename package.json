@@ -11,10 +11,11 @@
     "prepublishOnly": "yarn test",
     "prebuild": "rimraf ./bld",
     "build": "microbundle build --css-modules false --jsx React.createElement -f es",
-    "doc": "rimraf ./docs && typedoc --theme minimal --out docs src",
+    "doc": "rimraf ./dist && parcel build examples/index.html --no-source-maps --no-content-hash --public-url /rc-bezier/ && typedoc --theme minimal --out dist/docs src",
     "lint": "eslint .",
     "lint-prettier": "prettier --check .",
     "start": "parcel examples/index.html --open",
+    "gh-pages": "yarn doc && gh-pages -d dist",
     "test": "yarn lint-prettier && yarn build && yarn lint"
   },
   "files": [
@@ -33,7 +34,9 @@
     "@types/lodash-es": "^4.17.4",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/react-tabs": "^2.3.2",
     "eslint": "^7.15.0",
+    "gh-pages": "^3.1.0",
     "microbundle": "^0.12.4",
     "parcel-bundler": "^1.12.4",
     "prettier": "^2.2.1",

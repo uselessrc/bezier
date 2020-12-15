@@ -8,12 +8,13 @@ body {
 }
 
 #app {
-  width: 300vh;
-  height: 300vh;
+  width: 200vh;
+  height: 200vh;
+  padding: 12px;
 }
 
 .father {
-  margin: 120px;
+  margin: 60px 120px;
   width: 600px;
   padding: 200px 60px;
   border: dashed 1px #ccc;
@@ -27,4 +28,28 @@ body {
   border-radius: 2px;
   background-color: cadetblue;
   color: #fff;
+}
+
+.father :nth-child(2n + 3) {
+  background-color: pink;
+}
+
+pre {
+  position: relative;
+  background-color: #f6f8fa;
+  color: #24292e;
+  font-size: 14px;
+  line-height: 20px;
+  border-radius: 4px;
+  padding: 24px 60px;
+  margin: 24px 120px;
+  width: 600px;
+}
+
+pre::after {
+  content: attr(data-index);
+  font-size: 20px;
+  position: absolute;
+  top: 12px;
+  left: 12px;
 }
