@@ -66,7 +66,20 @@ const APP: FC = () => {
           <Tab>Mark</Tab>
           <Tab>Event</Tab>
           <Tab>API</Tab>
-          <Tab>Github</Tab>
+          <Tab
+            onClickCapture={() => {
+              location.href = 'https://github.com/boenfu/rc-bezier';
+            }}
+          >
+            Github
+            <img
+              style={{
+                marginLeft: 12,
+              }}
+              alt="GitHub Repo stars"
+              src="https://img.shields.io/github/stars/boenfu/rc-bezier?style=social"
+            ></img>
+          </Tab>
         </TabList>
 
         <TabPanel>
@@ -380,16 +393,7 @@ const APP: FC = () => {
             frameBorder="0"
           ></iframe>
         </TabPanel>
-        <TabPanel>
-          <iframe
-            style={{
-              width: '100vw',
-              height: '100vh',
-            }}
-            src="https://github.com/boenfu/rc-bezier"
-            frameBorder="0"
-          ></iframe>
-        </TabPanel>
+        <TabPanel></TabPanel>
       </Tabs>
     </Fragment>
   );
