@@ -22,6 +22,7 @@ export type BezierNode =
 
 export interface BezierProps {
   className?: string;
+  style?: React.CSSProperties;
   stroke?: BezierStroke;
   rect?: BezierRect;
   placement?: BezierPlacementOptions;
@@ -119,6 +120,7 @@ export interface BezierPlacementOptions {
  */
 export const BEZIER_PROPS_DEFAULT: Required<BezierProps> = {
   className: 'rc-bezier',
+  style: {},
   stroke: {
     color: '#000',
     width: 2,
@@ -144,9 +146,9 @@ export const BEZIER_PROPS_DEFAULT: Required<BezierProps> = {
  * @ignore
  */
 interface RectDict {
-  wrapper: Partial<DOMRect>;
-  start: Partial<DOMRect>;
-  end: Partial<DOMRect>;
+  wrapper: DOMRect | undefined;
+  start: DOMRect | undefined;
+  end: DOMRect | undefined;
 }
 
 /**
@@ -156,6 +158,7 @@ interface RectDict {
 export const Bezier: FC<BezierProps> = _props => {
   const {
     className,
+    style,
     stroke,
     rect: svgRect,
     placement,
@@ -168,74 +171,88 @@ export const Bezier: FC<BezierProps> = _props => {
   );
 
   // eslint-disable-next-line no-null/no-null
-  const svgRef = useRef<SVGSVGElement>(null);
+  const wrapperRef = useRef<any>(null);
 
-  const [rect, setRect] = useState<RectDict>({wrapper: {}, start: {}, end: {}});
+  const [rect, setRect] = useState<RectDict>({
+    wrapper: undefined,
+    start: undefined,
+    end: undefined,
+  });
 
-  const onDomChange = useCallback(() => {
-    const wrapper = svgRef.current;
+  const updateRectCallback = useCallback(() => {
+    const wrapper = wrapperRef.current;
 
     if (!wrapper) {
       return;
     }
 
-    setRect({
+    let rectDict = {
       wrapper: wrapper.getBoundingClientRect(),
       start: getBezierNodeDomRect(wrapper, startNode),
       end: getBezierNodeDomRect(wrapper, endNode),
-    });
-  }, [svgRef, startNode, endNode]);
+    };
+
+    setRect(rectDict);
+
+    return rectDict;
+  }, [wrapperRef, startNode, endNode]);
 
   useEffect(() => {
-    const wrapper = svgRef.current;
+    const wrapper = wrapperRef.current;
 
     if (!wrapper) {
       return;
     }
 
-    onDomChange();
-
-    let start = getBezierNodeDom(wrapper, startNode);
-    let end = getBezierNodeDom(wrapper, endNode);
-
-    let observer: MutationObserver | undefined;
+    if (!isQualified(updateRectCallback())) {
+      console.error('[rc-bezier]: Start node or end node missing !');
+      return;
+    }
 
     if (!observerSetting) {
       return;
     }
 
-    observer = new MutationObserver(onDomChange);
+    let start = getBezierNodeDom(wrapper, startNode)!;
+    let end = getBezierNodeDom(wrapper, endNode)!;
 
+    let observer = new MutationObserver(updateRectCallback);
     observer.observe(wrapper, {attributes: true});
-    observer.observe(start!, {attributes: true});
-    observer.observe(end!, {attributes: true});
+    observer.observe(start, {attributes: true});
+    observer.observe(end, {attributes: true});
 
     return () => {
       observer?.disconnect();
     };
-  }, [svgRef, observerSetting, startNode, endNode, onDomChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [observerSetting, updateRectCallback]);
 
   let {color, dasharray, width} = stroke;
 
   return (
-    <svg
-      className={className}
-      ref={svgRef}
-      style={{
-        ...svgRect,
-        pointerEvents: 'none',
-        overflow: 'visible',
-      }}
-    >
-      <path
-        d={generateD(rect, placement)}
-        stroke={color}
-        strokeDasharray={dasharray}
-        strokeWidth={width}
-        fill="none"
-        style={{pointerEvents: 'auto'}}
-      />
-    </svg>
+    <div className={className} ref={wrapperRef} style={{...style, ...svgRect}}>
+      <svg
+        style={{
+          ...svgRect,
+          display: 'block',
+          pointerEvents: 'none',
+          overflow: 'visible',
+        }}
+      >
+        {isQualified(rect) ? (
+          <path
+            d={generateD(rect, placement)}
+            stroke={color}
+            strokeDasharray={dasharray}
+            strokeWidth={width}
+            fill="transparent"
+            style={{pointerEvents: 'auto'}}
+          />
+        ) : (
+          <></>
+        )}
+      </svg>
+    </div>
   );
 };
 
@@ -271,9 +288,9 @@ function generateD(
 }
 
 function getPointXY(
-  {left = 0, top = 0, width = 0, height = 0}: Partial<DOMRect>,
+  {left = 0, top = 0, width = 0, height = 0}: Partial<DOMRect> = {},
   placement: BezierPlacement,
-  {left: baseX = 0, top: baseY = 0}: Partial<DOMRect>,
+  {left: baseX = 0, top: baseY = 0}: Partial<DOMRect> = {},
   offset: number = 0,
 ): [number, number] {
   let x!: number;
@@ -388,6 +405,10 @@ function getBezierNodeDom(
 function getBezierNodeDomRect(
   target: Element,
   node: BezierNode,
-): Partial<DOMRect> {
-  return getBezierNodeDom(target, node)?.getBoundingClientRect() || {};
+): DOMRect | undefined {
+  return getBezierNodeDom(target, node)?.getBoundingClientRect();
+}
+
+function isQualified(rect: RectDict | undefined): boolean {
+  return !!(rect && Object.values(rect).every(val => !!val));
 }
