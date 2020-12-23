@@ -1,6 +1,29 @@
 import {cloneDeep, merge} from 'lodash-es';
 import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
 
+export interface BezierProps {
+  className?: string;
+  style?: React.CSSProperties;
+  stroke?: BezierStroke;
+  rect?: BezierRect;
+  placement?: BezierPlacementOptions;
+  /**
+   * 始端节点, 默认 `previousSibling`
+   * Start node, default `previousSibling`
+   */
+  startNode?: BezierNode;
+  /**
+   * 尾端节点, 默认 `nextSibling`
+   * End node, default `nextSibling`
+   */
+  endNode?: BezierNode;
+  /**
+   * 是否监听节点变化, 自动重绘, 默认 `true`
+   * Whether to monitor node changes and automatically redraw, default `true`
+   */
+  observer?: boolean;
+}
+
 export type BezierPlacementX = 'left' | 'right';
 export type BezierPlacementY = 'top' | 'bottom';
 
@@ -10,38 +33,20 @@ export type BezierPlacement =
   | `${BezierPlacementY}-${BezierPlacementX}`
   | `${BezierPlacementX}-${BezierPlacementY}`;
 
+export type BezierNodeParentSelector = 'parent';
+export type BezierNodeSiblingSelector = 'previousSibling' | 'nextSibling';
+export type BezierNodeChildSelector = 'firstChild' | 'lastChild';
+export type BezierNodeSelector =
+  | BezierNodeParentSelector
+  | BezierNodeSiblingSelector
+  | BezierNodeChildSelector;
+
 export type BezierNode =
   | React.RefObject<Element>
   | Element
-  | 'previousElementSibling'
-  | 'nextElementSibling'
-  | 'parentElement'
-  | 'parentPreviousElementSibling'
-  | 'parentNextElementSibling'
+  | BezierNodeSelector
+  | BezierNodeSelector[]
   | ((elem: Element) => Element);
-
-export interface BezierProps {
-  className?: string;
-  style?: React.CSSProperties;
-  stroke?: BezierStroke;
-  rect?: BezierRect;
-  placement?: BezierPlacementOptions;
-  /**
-   * 始端节点, 默认 `previousElementSibling`
-   * Start node, default `previousElementSibling`
-   */
-  startNode?: BezierNode;
-  /**
-   * 尾端节点, 默认 `nextElementSibling`
-   * End node, default `nextElementSibling`
-   */
-  endNode?: BezierNode;
-  /**
-   * 是否监听节点变化, 自动重绘, 默认 `true`
-   * Whether to monitor node changes and automatically redraw, default `true`
-   */
-  observer?: boolean;
-}
 
 export interface BezierStroke {
   /**
@@ -137,8 +142,8 @@ export const BEZIER_PROPS_DEFAULT: Required<BezierProps> = {
     endIndent: 24,
     endOffset: 12,
   },
-  startNode: 'previousElementSibling',
-  endNode: 'nextElementSibling',
+  startNode: 'previousSibling',
+  endNode: 'nextSibling',
   observer: true,
 };
 
@@ -155,7 +160,7 @@ interface RectDict {
  * Bezier Component
  * @ignore
  */
-export const Bezier: FC<BezierProps> = _props => {
+export const Bezier: FC<BezierProps> = props => {
   const {
     className,
     style,
@@ -165,10 +170,7 @@ export const Bezier: FC<BezierProps> = _props => {
     observer: observerSetting,
     startNode,
     endNode,
-  } = merge<Required<BezierProps>, BezierProps>(
-    {...cloneDeep(BEZIER_PROPS_DEFAULT)},
-    _props,
-  );
+  } = fillProps(props);
 
   // eslint-disable-next-line no-null/no-null
   const wrapperRef = useRef<any>(null);
@@ -188,8 +190,8 @@ export const Bezier: FC<BezierProps> = _props => {
 
     let rectDict = {
       wrapper: wrapper.getBoundingClientRect(),
-      start: getBezierNodeDomRect(wrapper, startNode),
-      end: getBezierNodeDomRect(wrapper, endNode),
+      start: getBezierNodeElementRect(wrapper, startNode),
+      end: getBezierNodeElementRect(wrapper, endNode),
     };
 
     setRect(rectDict);
@@ -213,8 +215,8 @@ export const Bezier: FC<BezierProps> = _props => {
       return;
     }
 
-    let start = getBezierNodeDom(wrapper, startNode)!;
-    let end = getBezierNodeDom(wrapper, endNode)!;
+    let start = getBezierNodeElement(wrapper, startNode)!;
+    let end = getBezierNodeElement(wrapper, endNode)!;
 
     let observer = new MutationObserver(updateRectCallback);
     observer.observe(wrapper, {attributes: true});
@@ -255,6 +257,8 @@ export const Bezier: FC<BezierProps> = _props => {
     </div>
   );
 };
+
+// utils
 
 function generateD(
   {wrapper, start: startNode, end: endNode}: RectDict,
@@ -371,7 +375,7 @@ function getIndentXY(
   return [x, y];
 }
 
-function getBezierNodeDom(
+function getBezierNodeElement(
   target: Element,
   node: BezierNode,
 ): Element | null | undefined {
@@ -380,19 +384,21 @@ function getBezierNodeDom(
   }
 
   if (typeof node === 'string') {
-    switch (node) {
-      case 'nextElementSibling':
-      case 'previousElementSibling':
-      case 'parentElement':
-        return target[node];
+    return resolveSelector(target, node);
+  }
 
-      case 'parentPreviousElementSibling':
-        return target.parentElement?.previousElementSibling;
-      case 'parentNextElementSibling':
-        return target.parentElement?.nextElementSibling;
-      default:
-        return;
+  if (Array.isArray(node)) {
+    let element: Element | null = target;
+
+    for (let selector of node) {
+      element = resolveSelector(element, selector);
+
+      if (!element) {
+        return undefined;
+      }
     }
+
+    return element;
   }
 
   if ('current' in node) {
@@ -402,13 +408,48 @@ function getBezierNodeDom(
   return node;
 }
 
-function getBezierNodeDomRect(
+function getBezierNodeElementRect(
   target: Element,
   node: BezierNode,
 ): DOMRect | undefined {
-  return getBezierNodeDom(target, node)?.getBoundingClientRect();
+  return getBezierNodeElement(target, node)?.getBoundingClientRect();
 }
 
 function isQualified(rect: RectDict | undefined): boolean {
   return !!(rect && Object.values(rect).every(val => !!val));
+}
+
+function fillProps(props: BezierProps): Required<BezierProps> {
+  const defaultProps = cloneDeep(BEZIER_PROPS_DEFAULT);
+
+  const {
+    className = defaultProps.className,
+    style = defaultProps.style,
+    startNode = defaultProps.startNode,
+    endNode = defaultProps.endNode,
+    observer = defaultProps.observer,
+    stroke,
+    rect,
+    placement,
+  } = props;
+
+  return {
+    className,
+    style,
+    startNode,
+    endNode,
+    observer,
+    stroke: merge(defaultProps.stroke, stroke),
+    rect: merge(defaultProps.rect, rect),
+    placement: merge(defaultProps.placement, placement),
+  };
+}
+
+function resolveSelector(
+  element: Element,
+  selector: BezierNodeSelector,
+): Element | null {
+  return element[
+    selector.replace(/(?=[A-Z]|$)/, 'Element') as keyof Element
+  ] as Element;
 }

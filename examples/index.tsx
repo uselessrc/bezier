@@ -115,8 +115,8 @@ const APP: FC = () => {
 <div style={{backgroundColor: 'blueviolet'}}>
 <Bezier
   rect={{width: 200, height: 200}}
-  startNode="parentPreviousElementSibling"
-  endNode="parentNextElementSibling"
+  startNode={['parent', 'previousSibling']}
+  endNode={['parent', 'nextSibling']}
 />
 </div>
 <div className="block" style={{top: 1300, left: 480}}>block 2</div>
@@ -132,8 +132,8 @@ const APP: FC = () => {
             <div style={{backgroundColor: 'blueviolet'}}>
               <Bezier
                 rect={{width: 200, height: 200}}
-                startNode="parentPreviousElementSibling"
-                endNode="parentNextElementSibling"
+                startNode={['parent', 'previousSibling']}
+                endNode={['parent', 'nextSibling']}
               />
             </div>
             <div className="block" style={{top: 1500, left: 480}}>
@@ -210,8 +210,8 @@ const APP: FC = () => {
 <div className="block">block 1</div>
 <Bezier
   placement={{start: 'bottom', end: 'top'}}
-  startNode="previousElementSibling"
-  endNode="nextElementSibling"
+  startNode="previousSibling"
+  endNode="nextSibling"
 />
 <div className="block">block 2</div>
 <Bezier placement={{start: 'right', end: 'bottom'}} />
@@ -231,8 +231,8 @@ const APP: FC = () => {
             </div>
             <Bezier
               placement={{start: 'bottom', end: 'top'}}
-              startNode="previousElementSibling"
-              endNode="nextElementSibling"
+              startNode="previousSibling"
+              endNode="nextSibling"
             />
             <div className="block" style={{top: 2200, left: 220}}>
               block 2
@@ -266,8 +266,8 @@ const APP: FC = () => {
             turningPoint: 0,
             startIndent: -60,
           }}
-          startNode="parentElement"
-          endNode="previousElementSibling"
+          startNode="parent"
+          endNode="previousSibling"
         />
       </Fragment>
     );
@@ -299,8 +299,8 @@ const APP: FC = () => {
                         turningPoint: 0,
                         startIndent: -60,
                       }}
-                      startNode="parentElement"
-                      endNode="previousElementSibling"
+                      startNode="parent"
+                      endNode="previousSibling"
                     />
                   </Fragment>
                 );
