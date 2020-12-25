@@ -41,7 +41,7 @@ It will automatically generate a curve between the two blocks
 
 [→ click to site](https://uselessrc.github.io/bezier)
 
-[→ props types file](https://github.com/uselessrc/bezier/blob/main/src/library/index.tsx#L4)
+[→ props types file](https://github.com/uselessrc/bezier/blob/main/src/library/bezier.doc.tsx#L3)
 
 ## Authors
 

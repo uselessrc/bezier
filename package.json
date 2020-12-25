@@ -3,7 +3,7 @@
   "version": "0.1.2",
   "license": "MIT",
   "author": "boenfu",
-  "source": "src/library/index.tsx",
+  "source": "src/library/index.ts",
   "main": "bld/library/index.js",
   "module": "bld/library/index.js",
   "types": "bld/library/index.d.ts",

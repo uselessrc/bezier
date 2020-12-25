@@ -1,4 +1,4 @@
-import React, {FC, Fragment} from 'react';
+import React, {FC, Fragment, useState} from 'react';
 import ReactDOM from 'react-dom';
 import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
@@ -50,6 +50,9 @@ const APP: FC = () => {
   });
 
   useDocumentEvent('mouseup', () => setMoving(false));
+
+  const [markRangePosition, setMarkRangePosition] = useState(0.5);
+  const [markPointPosition, setMarkPointPosition] = useState({x: 0, y: 0});
 
   return (
     <Fragment>
@@ -378,7 +381,156 @@ const APP: FC = () => {
           </div>
         </TabPanel>
         <TabPanel>
-          <pre data-index="#1 WIP" />
+          <pre
+            data-index="#1 Range Position"
+            dangerouslySetInnerHTML={{
+              __html: escape(
+                `
+// state
+const [markRangePosition, setMarkRangePosition] = useState(0.5);
+
+// render
+
+<input
+  type="range"
+  min="0"
+  max="1"
+  value={markRangePosition}
+  onChange={event => setMarkRangePosition(+event.target.value)}
+  step="0.01"
+/>
+<div className="block">
+block 1
+</div>
+<Bezier
+  marks={[
+    {
+      key: 'mark',
+      render: (
+        <div
+          style={{
+            width: 48,
+            height: 48,
+            backgroundColor: 'goldenrod',
+          }}
+        />
+      ),
+      position: markRangePosition,
+    },
+  ]}
+/>
+<div className="block">
+block 2
+</div>
+`,
+              ),
+            }}
+          />
+          <input
+            style={{marginLeft: 120}}
+            type="range"
+            min="0"
+            max="1"
+            value={markRangePosition}
+            onChange={event => setMarkRangePosition(+event.target.value)}
+            step="0.01"
+          />
+          <div className="father">
+            <div className="block" style={{top: 1000, left: 200}}>
+              block 1
+            </div>
+            <Bezier
+              marks={[
+                {
+                  key: 'mark',
+                  render: (
+                    <div
+                      style={{
+                        width: 48,
+                        height: 48,
+                        backgroundColor: 'goldenrod',
+                      }}
+                    />
+                  ),
+                  position: markRangePosition,
+                },
+              ]}
+            />
+            <div className="block" style={{top: 1280, left: 480}}>
+              block 2
+            </div>
+          </div>
+
+          <pre
+            data-index="#2 Event & Point Position"
+            dangerouslySetInnerHTML={{
+              __html: escape(
+                `
+// state
+const [markPointPosition, setMarkPointPosition] = useState({x: 0, y: 0});
+
+// render
+
+<div className="father">
+<div className="block">
+  block 1
+</div>
+<Bezier
+  stroke={{width: 20}}
+  marks={[
+    {
+      key: 'mark',
+      render: (
+        <div
+          style={{
+            width: 48,
+            height: 48,
+            backgroundColor: 'goldenrod',
+          }}
+        />
+      ),
+      position: markPointPosition,
+      onClick: point => setMarkPointPosition(point),
+    },
+  ]}
+/>
+<div className="block">
+  block 2
+</div>
+</div>
+`,
+              ),
+            }}
+          />
+          <div className="father">
+            <div className="block" style={{top: 2260, left: 200}}>
+              block 1
+            </div>
+            <Bezier
+              stroke={{width: 20}}
+              marks={[
+                {
+                  key: 'mark',
+                  render: (
+                    <div
+                      style={{
+                        width: 48,
+                        height: 48,
+                        backgroundColor: 'goldenrod',
+                      }}
+                    >
+                      click curve
+                    </div>
+                  ),
+                  position: markPointPosition,
+                  onClick: point => setMarkPointPosition(point),
+                },
+              ]}
+            />
+            <div className="block" style={{top: 2520, left: 480}}>
+              block 2
+            </div>
+          </div>
         </TabPanel>
         <TabPanel>
           <pre data-index="#1 WIP" />
