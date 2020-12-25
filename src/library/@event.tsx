@@ -33,7 +33,7 @@ export function useMouseEvent(
   }, [x, y]);
 
   useEffect(() => {
-    const onMouseEvent = (eventName: keyof Mark): any => {
+    const onMouseEvent = (eventName: string): ((event: MouseEvent) => void) => {
       return (event: MouseEvent) => {
         let {offsetX, offsetY} = event.nativeEvent;
         let {x, y} = startPoint.current;
@@ -41,7 +41,7 @@ export function useMouseEvent(
         let point = {x: offsetX - x, y: offsetY - y};
 
         for (let mark of marks.current) {
-          let handler = mark[eventName];
+          let handler = mark[eventName as keyof Mark];
 
           if (typeof handler !== 'function') {
             continue;
@@ -78,13 +78,10 @@ export function useMouseEvent(
         'onTouchEndCapture',
         'onTouchStart',
         'onTouchStartCapture',
-      ].reduce<SVGProps<SVGPathElement>>(
-        (props: any, eventName: keyof Mark) => {
-          props[eventName] = onMouseEvent(eventName);
-          return props;
-        },
-        {},
-      ),
+      ].reduce<SVGProps<SVGPathElement>>((props: any, eventName: string) => {
+        props[eventName] = onMouseEvent(eventName);
+        return props;
+      }, {}),
     );
   }, []);
 
