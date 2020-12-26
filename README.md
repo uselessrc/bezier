@@ -43,6 +43,18 @@ It will automatically generate a curve between the two blocks
 
 [→ props types file](https://github.com/uselessrc/bezier/blob/main/src/library/bezier.doc.tsx#L3)
 
+### Stroke
+
+![stroke.gif](https://i.loli.net/2020/12/26/AHOcj3KpyJeix5B.gif)
+
+### Placement
+
+![placement.gif](https://i.loli.net/2020/12/26/ufPKb7aWYkjOnrN.gif)
+
+### Mark
+
+![mark.gif](https://i.loli.net/2020/12/26/jaQSJEV1IROD7qL.gif)
+
 ## Authors
 
 - [boen](https://github.com/boenfu)
