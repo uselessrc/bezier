@@ -127,9 +127,7 @@ export const Bezier: FC<BezierProps> = props => {
             style={{pointerEvents: 'visibleStroke'}}
             {...pathProps}
           />
-        ) : (
-          <></>
-        )}
+        ) : undefined}
       </svg>
 
       <MarkList points={points} marks={marks} />
