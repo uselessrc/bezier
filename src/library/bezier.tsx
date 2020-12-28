@@ -2,12 +2,7 @@ import React, {FC, useCallback, useEffect, useRef, useState} from 'react';
 
 import {fillProps} from './@default';
 import {useMouseEvent} from './@event';
-import {
-  generateD,
-  generatePoints,
-  getNodeElement,
-  getNodeElementRect,
-} from './@utils';
+import {generatePoints, getNodeElement, getNodeElementRect} from './@utils';
 import {BezierProps} from './bezier.doc';
 import {MarkList} from './mark';
 
@@ -35,6 +30,7 @@ export const Bezier: FC<BezierProps> = props => {
     startNode,
     endNode,
     marks,
+    generatePath,
   } = fillProps(props);
 
   // eslint-disable-next-line no-null/no-null
@@ -98,7 +94,7 @@ export const Bezier: FC<BezierProps> = props => {
 
   let qualified = isQualified(rect);
   let points = qualified ? generatePoints(rect, placement) : [];
-  let d = points.length ? generateD(points) : undefined;
+  let d = points.length ? generatePath(points) : undefined;
 
   let [pathProps] = useMouseEvent(marks, points[0]);
 

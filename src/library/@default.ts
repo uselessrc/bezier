@@ -1,5 +1,6 @@
 import {cloneDeep, merge} from 'lodash-es';
 
+import {generateD} from './@utils';
 import {BezierProps} from './bezier.doc';
 
 /**
@@ -28,6 +29,7 @@ export const BEZIER_PROPS_DEFAULT: Required<BezierProps> = {
   endNode: 'nextSibling',
   observer: true,
   marks: [],
+  generatePath: generateD,
 };
 
 export function fillProps(props: BezierProps): Required<BezierProps> {
@@ -40,6 +42,7 @@ export function fillProps(props: BezierProps): Required<BezierProps> {
     endNode = defaultProps.endNode,
     observer = defaultProps.observer,
     marks = defaultProps.marks,
+    generatePath = defaultProps.generatePath,
     stroke,
     rect,
     placement,
@@ -52,6 +55,7 @@ export function fillProps(props: BezierProps): Required<BezierProps> {
     endNode,
     observer,
     marks,
+    generatePath,
     stroke: merge(defaultProps.stroke, stroke),
     rect: merge(defaultProps.rect, rect),
     placement: merge(defaultProps.placement, placement),

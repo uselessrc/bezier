@@ -22,6 +22,7 @@ export interface BezierProps {
    */
   observer?: boolean;
   marks?: Mark[];
+  generatePath?: (points: BezierPoint[]) => string;
 }
 
 export type BezierPlacementX = 'left' | 'right';
