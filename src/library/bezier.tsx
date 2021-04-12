@@ -80,9 +80,9 @@ export const Bezier: FC<BezierProps> = props => {
     let end = getNodeElement(wrapper, endNode)!;
 
     let observer = new MutationObserver(updateRectCallback);
-    observer.observe(wrapper, {attributes: true});
-    observer.observe(start, {attributes: true});
-    observer.observe(end, {attributes: true});
+    observer.observe(wrapper, observerSetting);
+    observer.observe(start, observerSetting);
+    observer.observe(end, observerSetting);
 
     return () => {
       observer?.disconnect();

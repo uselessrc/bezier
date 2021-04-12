@@ -17,10 +17,10 @@ export interface BezierProps {
    */
   endNode?: BezierNode;
   /**
-   * 是否监听节点变化, 自动重绘, 默认 `true`
+   * 是否监听节点变化, 自动重绘, 默认 `{attributes: true}`
    * Whether to monitor node changes and automatically redraw, default `true`
    */
-  observer?: boolean;
+  observer?: BezierObserver | false;
   marks?: Mark[];
   generatePath?: (points: BezierPoint[]) => string;
 }
@@ -47,6 +47,8 @@ export type BezierNode =
   | BezierNodeSelector
   | BezierNodeSelector[]
   | ((elem: Element) => Element);
+
+export interface BezierObserver extends MutationObserverInit {}
 
 export interface BezierStroke {
   /**

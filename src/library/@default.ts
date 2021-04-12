@@ -27,7 +27,9 @@ export const BEZIER_PROPS_DEFAULT: Required<BezierProps> = {
   },
   startNode: 'previousSibling',
   endNode: 'nextSibling',
-  observer: true,
+  observer: {
+    attributes: true,
+  },
   marks: [],
   generatePath: generateD,
 };
